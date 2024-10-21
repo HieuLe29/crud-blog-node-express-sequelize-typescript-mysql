@@ -11,8 +11,8 @@ User.init(
   {
     id: {
       type: DataTypes.INTEGER,
-      autoIncrement: true, // Tự động tăng
-      primaryKey: true, // Đặt làm khóa chính
+      autoIncrement: true, 
+      primaryKey: true, 
     },
     name: {
       type: DataTypes.STRING,

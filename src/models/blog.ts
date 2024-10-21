@@ -1,6 +1,6 @@
-import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../database/database';
-import User from './user';
+import { Model, DataTypes } from "sequelize";
+import { sequelize } from "../database/database";
+import User from "./user";
 
 class Blog extends Model {
   public id!: number;
@@ -11,6 +11,11 @@ class Blog extends Model {
 
 Blog.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true, // Tự động tăng
+      primaryKey: true, // Đặt làm khóa chính
+    },
     title: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -26,12 +31,12 @@ Blog.init(
   },
   {
     sequelize,
-    modelName: 'Blog',
+    modelName: "Blog",
   }
 );
 
 // Relationship
-User.hasMany(Blog, { foreignKey: 'userId' });
-Blog.belongsTo(User, { foreignKey: 'userId' });
+User.hasMany(Blog, { foreignKey: "userId" });
+Blog.belongsTo(User, { foreignKey: "userId" });
 
 export default Blog;
