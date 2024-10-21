@@ -19,6 +19,11 @@ Blog.init(
     title: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        notNull: {msg: "Title is required"},
+        notEmpty: {msg: "Title is required"},
+        is: {args: ["^[a-zA-Z0-9]+$", "i"], msg: "Title can only contain letters and numbers"},
+      }
     },
     content: {
       type: DataTypes.TEXT,

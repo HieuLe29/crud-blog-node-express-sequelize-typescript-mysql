@@ -17,10 +17,22 @@ User.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
+      validate: {
+        notNull: {msg: "Name is required"},
+        notEmpty: {msg: "Name is required"},
+        is: {args: ["^[a-zA-Z]+$", "i"], msg: "Name can only contain letters and numbers"},
+      }
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
+      validate: {
+        notNull: {msg: "Email is required"},
+        notEmpty: {msg: "Email is required"},
+        isEmail: {msg: "Email is invalid"},
+      }
     },
   },
   {
