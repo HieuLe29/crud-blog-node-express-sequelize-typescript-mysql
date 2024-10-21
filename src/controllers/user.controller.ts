@@ -1,6 +1,35 @@
 import { Request, Response } from "express";
 import User from "../models/user";
-import { errorMonitor } from "events";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+export const register = async (req: Request, res: Response) => {
+  const { name, email, password } = req.body;
+  console.log(name, email, password);
+  
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({ name, email, password: hashedPassword });
+    res.status(201).json({ id: user.id, name: user.name, email: user.email, password: user.password });
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
+
+export const login = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ where: { email, password } });
+    if (user && await bcrypt.compare(password, user.password)) {
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string,{expiresIn: "1h"});
+      res.json({ token });
+    }
+    res.status(401).json({ message: "Log in successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error logging in" });
+  }
+};
 
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -27,12 +56,12 @@ export const getUserById = async (req: Request, res: Response) => {
     if (user) {
       res.status(200).json(user);
     } else {
-      res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching user' });
+    res.status(500).json({ message: "Error fetching user" });
   }
-}
+};
 
 // Cập nhật thông tin người dùng
 export const updateUser = async (req: Request, res: Response) => {
@@ -44,10 +73,10 @@ export const updateUser = async (req: Request, res: Response) => {
       await user.update({ name, email });
       res.status(200).json(user);
     } else {
-      res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error updating user' });
+    res.status(500).json({ message: "Error updating user" });
   }
 };
 
@@ -58,12 +87,11 @@ export const deleteUser = async (req: Request, res: Response) => {
     const user = await User.findByPk(id);
     if (user) {
       await user.destroy();
-      res.status(200).json({ message: 'User deleted successfully' });
+      res.status(200).json({ message: "User deleted successfully" });
     } else {
-      res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: "User not found" });
     }
-   
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting user' });
+    res.status(500).json({ message: "Error deleting user" });
   }
 };

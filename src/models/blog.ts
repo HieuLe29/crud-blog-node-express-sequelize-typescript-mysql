@@ -22,7 +22,6 @@ Blog.init(
       validate: {
         notNull: {msg: "Title is required"},
         notEmpty: {msg: "Title is required"},
-        is: {args: ["^[a-zA-Z0-9]+$", "i"], msg: "Title can only contain letters and numbers"},
       }
     },
     content: {
@@ -32,10 +31,15 @@ Blog.init(
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: User,
+        key: "id",
+      }
     },
   },
   {
     sequelize,
+    tableName: 'blogs',
     modelName: "Blog",
   }
 );
