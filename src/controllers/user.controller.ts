@@ -138,17 +138,11 @@ export const searchUsersByNameAndEmail = async (req: Request, res: Response) => 
       const users = await User.findAll({ where: whereClause });
 
       if (users.length > 0) {
-          res.status(200).json(users);
+        res.status(200).json(users);
       } else {
           res.status(404).json({ message: "User not found" });
       }
   } catch (error) {
-      console.error(error);
       res.status(500).json({ message: "Error users" });
   }
 };
-
-export const hehe = async (req: Request, res: Response) => {
-  console.log("hehe");
-  
-}
