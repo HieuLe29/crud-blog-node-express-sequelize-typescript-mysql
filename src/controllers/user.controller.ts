@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import {User, Blog} from "../models";
+import {User, Blog, Category} from "../models";
 
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -58,7 +58,9 @@ export const getUsers = async (req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
+    
     const user = await User.findByPk(id);
+
     if (user) {
       res.status(200).json(user);
     } else {

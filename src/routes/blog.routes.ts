@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post('/', createBlog);
 router.get('/', getBlogs);
-router.get('/:id', getBlogById); 
+router.get('/:id/findById', getBlogById); 
 router.delete('/:id', deleteBlog);
 router.put('/:id', updateBlog);
 

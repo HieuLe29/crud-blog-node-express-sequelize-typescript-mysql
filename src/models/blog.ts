@@ -37,14 +37,6 @@ Blog.init(
         model: User,
         key: "id",
       }
-    },
-    categoryId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: Category,
-        key: "id",
-      }
     }
   },
   {
@@ -57,8 +49,5 @@ Blog.init(
 // Relationship
 User.hasMany(Blog, { foreignKey: "userId" });
 Blog.belongsTo(User, { foreignKey: "userId" });
-
-Category.hasMany(Blog, {foreignKey: "categoryId"});
-Blog.belongsTo(Category, {foreignKey: "categoryId"});
 
 export default Blog;
