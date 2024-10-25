@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { User } from '../models';
 import { IUser } from '../models/user';
 
 export interface RequestWithUser extends Request {
@@ -9,7 +8,7 @@ export interface RequestWithUser extends Request {
 
 export const authenticate = (req: RequestWithUser, res: Response, next: NextFunction): void => {
   const authorizationClient = req.headers.authorization;
-  const token = authorizationClient && authorizationClient.split(' ')[1]
+  const token = authorizationClient && authorizationClient.split(' ')[1];
 
   if (!token) {
     res.status(401).json({ message: 'Access denied' });
@@ -24,4 +23,4 @@ export const authenticate = (req: RequestWithUser, res: Response, next: NextFunc
     console.log(err);
     res.status(400).json({ message: 'Invalid token' });
   }
-};
+}

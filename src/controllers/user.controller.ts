@@ -4,6 +4,7 @@ import {User, Blog} from "../models";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Op } from "sequelize";
+import { RequestWithUser } from "../middleware/AuthMiddleware";
 
 
 
@@ -40,14 +41,6 @@ export const login = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Login failed', error });
   }
 };
-export const createUser = async (req: Request, res: Response) => {
-  try {
-    const user = await User.create(req.body);
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-};
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
@@ -75,9 +68,9 @@ export const getUserById = async (req: Request, res: Response) => {
 };
 
 // Cập nhật thông tin người dùng
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUser = async (req: RequestWithUser, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.user?.id;
     const { name, email } = req.body;
     const user = await User.findByPk(id);
     if (user) {
