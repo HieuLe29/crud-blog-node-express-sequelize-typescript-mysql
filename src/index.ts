@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 // Routes
-app.use('/users', userRoutes);
+app.use('/', userRoutes);
 app.use('/blogs', blogRoutes);
 app.use('/categories', categoryRoutes)
 

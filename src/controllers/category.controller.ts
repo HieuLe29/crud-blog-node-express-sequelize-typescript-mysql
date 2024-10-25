@@ -78,9 +78,9 @@ export const findCategoriesByName = async (req: Request, res: Response) => {
       },
     });
     if (categories) {
-          res.status(200).json(categories);
+      res.status(200).json(categories);
     } else {
-          res.status(404).json({message: "Category not found"});
+      res.status(404).json({ message: "Category not found" });
     }
   } catch (error) {
     res.status(500).json({ mesage: "Error finding category" });
@@ -88,15 +88,22 @@ export const findCategoriesByName = async (req: Request, res: Response) => {
 };
 
 export const findBlogsByCategoryId = async (req: Request, res: Response) => {
-          try {
-                    const {id} = req.params;
-                    const blogs = await Blog.findAll({where: {categoryId: id}});
-                    if (blogs.length > 0) {
-                              res.status(200).json(blogs);
-                    } else {
-                              res.status(404).json({message: "Blog not found"});
-                    }
-          } catch (error) {
-                    res.status(500).json({message: "Error finding blog"});
-          }
-}
+  try {
+    const { id } = req.params;
+
+    const category = await Category.findByPk(id, {
+      attributes: ["id", "name"],
+      include: [
+        {
+          model: Blog,
+          attributes: ["id", "title", "content"],
+          through: {attributes: []},
+          as: "blogs"
+        }
+      ]
+    })
+     res.status(200).json(category);
+  } catch (error) {
+    res.status(500).json({ message: "Error finding blog" });
+  }
+};
