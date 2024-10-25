@@ -2,11 +2,13 @@ import e, { Request, Response } from 'express';
 import Blog from '../models/blog';
 import BlogCategories from '../models/blog_categories';
 import { Category } from '../models';
+import { Op } from 'sequelize';
+import { RequestWithUser } from '../middleware/AuthMiddleware';
 
-export const createBlog = async (req: Request, res: Response) => {
-  const { title, content, userId, categories } = req.body;
+export const createBlog = async (req: RequestWithUser, res: Response) => {
+  const { title, content, categories } = req.body;
   try {
-    const blog = await Blog.create({ title, content, userId });
+    const blog = await Blog.create({ title, content, userId: req.user?.id });
 
     await BlogCategories.bulkCreate(
       categories.map((category: number) => ({ blogId: blog.id, categoryId: category })),
@@ -91,3 +93,15 @@ export const deleteBlog = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error deleting blog' });
   }
 };
+
+export const searchBlogsByTitle = async (req: Request, res: Response) => {
+  const { title } = req.query;
+  try {
+    const blogs = await Blog.findAll({
+      where: { title: { [Op.like]: `%${title}%` } },
+    });
+    res.status(200).json(blogs);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching blogs' });
+  }
+}

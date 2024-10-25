@@ -21,10 +21,7 @@ Blog.init(
     title: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        notNull: {msg: "Title is required"},
-        notEmpty: {msg: "Title is required"},
-      }
+      unique: true,
     },
     content: {
       type: DataTypes.TEXT,

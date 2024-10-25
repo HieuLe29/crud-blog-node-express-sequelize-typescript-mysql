@@ -1,17 +1,24 @@
 import { Request, Response } from "express";
-import {User, Blog, Category} from "../models";
+import {User, Blog} from "../models";
 
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Op } from "sequelize";
+
+
 
 export const register = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
   
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = await User.create({ name, email, password: hashedPassword });
-    res.status(201).json({ id: user.id, name: user.name, email: user.email});
+
+    const token =jwt.sign({ id: user.id, name: user.name, email: user.email}, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '1h' });
+
+    res.send({name: user.name, email: user.email, token: token});
+
   } catch (error) {
     res.status(400).json(error);
   }
@@ -19,24 +26,20 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-
   try {
-    // Tìm người dùng theo email
     const user = await User.findOne({ where: { email } });
     
-    // Kiểm tra xem người dùng có tồn tại và kiểm tra mật khẩu
-    if (user && await bcrypt.compare(password, user.password)) {
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, { expiresIn: "1h" });
-      res.json({ token }); // Trả về token khi đăng nhập thành công
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const token =jwt.sign({ id: user.id, name: user.name, email: user.email}, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '1h' });
+      res.json({ token });
+      return;
     }
 
-    // Nếu người dùng không tồn tại hoặc mật khẩu không đúng
-    res.status(401).json({ message: "Invalid email or password" });
+    res.status(400).json({ message: 'Invalid email or password' });
   } catch (error) {
-    res.status(500).json({ message: "Error logging in"});
+    res.status(500).json({ message: 'Login failed', error });
   }
 };
-
 export const createUser = async (req: Request, res: Response) => {
   try {
     const user = await User.create(req.body);
